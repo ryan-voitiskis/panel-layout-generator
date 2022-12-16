@@ -37,6 +37,7 @@
         </div>
       </div>
       <button @click="state.showColourPicker = true">Add colour</button>
+      <button @click="state.shuffle = true">Shuffle</button>
     </div>
     <p v-if="state.notEnoughColours">Not enough panels to fill the grid.</p>
     <p v-if="state.generateFailed">
@@ -55,7 +56,11 @@
       </div>
     </div>
   </div>
-  <ColourPickerModal v-if="state.showColourPicker" />
+  <ColourPickerModal
+    v-if="state.showColourPicker"
+    @close="state.showColourPicker = false"
+    @add="addColour($event[0], $event[1])"
+  />
 </template>
 
 <script setup lang="ts">
@@ -82,14 +87,31 @@ const state = reactive({
   showColourPicker: false,
   notEnoughColours: false,
   generateFailed: false,
+  shuffle: false,
 })
 
+function addColour(colour: string, quantity: number) {
+  state.panelColours.push({
+    colour: colour,
+    quantity: quantity,
+    quantityUsed: 0,
+  })
+  state.showColourPicker = false
+}
+
+function resetQuantityUsed() {
+  state.panelColours = state.panelColours.map((c) => ({
+    ...c,
+    quantityUsed: 0,
+  }))
+}
+
 // get a random colour option that uses quantity to determine the chance of being picked
-const getColourOption = (
+function getColourOption(
   colourToLeft: string | null,
   colourAbove: string | null,
   totalPanels: number
-): string | null => {
+): string | null {
   const possibilities: string[] = []
   state.panelColours.forEach((c) => {
     for (let i = 0; i < c.quantity - c.quantityUsed; i++) {
@@ -113,17 +135,12 @@ const getColourOption = (
   } else return option
 }
 
-function resetQuantityUsed() {
-  state.panelColours = state.panelColours.map((c) => ({
-    ...c,
-    quantityUsed: 0,
-  }))
-}
-
 //? why is this not running when colour quantities change after failed generation? change numberOfRows or numberOfColumns recomputes it.
 // generate a matrix of colours, ensuring that no two adjacent colours are the same
 const matrix = computed(() => {
   console.log("Ran")
+  if (state.shuffle) state.shuffle = false
+
   if (state.panelColours.length < 2) return []
   if (state.numberOfRows < 1 || state.numberOfColumns < 1) return []
   if (state.numberOfRows > 100 || state.numberOfColumns > 100) return []

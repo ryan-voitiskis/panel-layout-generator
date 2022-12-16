@@ -1,37 +1,63 @@
 <template>
   <div class="modal-backdrop" @click.self="$emit('close')">
-    <div class="modal" :class="{ full: fullHeight, dynamic: !fullHeight }">
-      <ColorPicker alpha-channel="hide" />
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Pick a colour</h2>
+        <button class="close icon-only-button" @click="$emit('close')">
+          <XIcon />
+        </button>
+      </div>
+      <div class="modal-body">
+        <ColorPicker
+          alpha-channel="hide"
+          :color="colour"
+          @color-change="updateColour"
+          :visible-formats="['hsl']"
+        />
+        <label for="quantity">
+          Quantity
+          <input
+            type="number"
+            id="quantity"
+            v-model="quantity"
+            min="1"
+            max="1000"
+          />
+        </label>
+      </div>
+      <div class="modal-footer">
+        <button class="close" @click="$emit('close')">Close</button>
+        <button class="add" @click="$emit('add', [colour, quantity])">
+          Add
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import {
-  withDefaults,
-  defineProps,
+  ref,
   onMounted,
   defineEmits,
   onBeforeUnmount,
   onActivated,
   onDeactivated,
 } from "vue"
-import { ColorPicker } from "vue-accessible-color-picker"
-
-export interface Props {
-  width?: string
-  fullHeight?: boolean
-}
-
-withDefaults(defineProps<Props>(), {
-  title: "",
-  width: "440px",
-  fullHeight: false,
-})
+import XIcon from "../components/icons/XIcon.vue"
+import { ColorChangeEvent, ColorPicker } from "vue-accessible-color-picker"
 
 const emit = defineEmits<{
   (e: "close"): void
+  (e: "add", colour: string, quantity: number): void
 }>()
+
+const colour = ref("hsl(270 100% 50% / 0.8)")
+const quantity = ref(1)
+
+function updateColour(eventData: ColorChangeEvent) {
+  colour.value = eventData.cssColor
+}
 
 function escapeClose(e: KeyboardEvent) {
   if (e.key === "Escape") emit("close")
@@ -70,13 +96,13 @@ onDeactivated(() => {
   align-items: center;
   z-index: 99;
   .modal {
-    background: var(--page-bg);
+    background: #fff;
     transition: background-color 200ms, color 200ms;
     border-radius: 10px;
     z-index: 100;
     display: flex;
     flex-direction: column;
-    width: v-bind(width);
+    width: 380px;
     margin: 10px;
     &.dynamic {
       max-height: calc(100% - 20px);
@@ -149,16 +175,7 @@ onDeactivated(() => {
   gap: 20px;
 }
 
-.question {
-  justify-content: center;
-  display: flex;
-  text-align: center;
-}
-
-.hint {
-  word-break: break-word;
-  display: block;
-  padding: 0 40px;
-  margin: -20px 0 10px 0;
+.vacp-color-picker {
+  padding: 0;
 }
 </style>
