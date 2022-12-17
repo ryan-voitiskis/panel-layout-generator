@@ -31,27 +31,34 @@
               type="number"
               id="colour-{{ index }}"
               v-model="colour.quantity"
+              @change="regenerateMatrix"
             />
             used: {{ colour.quantityUsed }}
           </div>
         </div>
       </div>
       <button @click="state.showColourPicker = true">Add colour</button>
-      <button @click="state.shuffle = true">Shuffle</button>
+      <button @click="regenerateMatrix">Shuffle</button>
     </div>
-    <p v-if="state.notEnoughColours">Not enough panels to fill the grid.</p>
+    <p v-if="state.notEnoughPanels">Not enough panels to fill the grid.</p>
     <p v-if="state.generateFailed">
-      Failed to generate a grid. Probably not enough variety of panel colours.
+      Failed to generate a grid. Unknown reason.
+    </p>
+    <p v-if="state.notEnoughVariety">
+      Not enough variety of panel colours. Try adding more colours.
     </p>
     <div class="grid">
-      <div class="column" v-for="(column, index) in matrix">
+      <div class="loader-backdrop" v-if="state.generating">
+        <BallTriangleLoader class="loader" />
+      </div>
+      <div class="column" v-for="(column, index) in state.matrix">
         <div
           class="panel"
           v-for="(colour, index2) in column"
-          :style="{ backgroundColor: colour }"
+          :style="{ backgroundColor: state.panelColours[colour].colour }"
         >
-          {{ index2 + 1 }} down<br />
-          {{ index + 1 }} across
+          <!-- {{ index2 + 1 }} down<br />
+          {{ index + 1 }} across -->
         </div>
       </div>
     </div>
@@ -59,14 +66,15 @@
   <ColourPickerModal
     v-if="state.showColourPicker"
     @close="state.showColourPicker = false"
-    @add="addColour($event[0], $event[1])"
+    @add="addColour($event)"
   />
 </template>
 
 <script setup lang="ts">
-import { reactive, computed } from "vue"
+import { reactive, computed, watch } from "vue"
 import XIcon from "./components/icons/XIcon.vue"
 import ColourPickerModal from "./components/ColourPickerModal.vue"
+import BallTriangleLoader from "./components/icons/BallTriangleLoader.vue"
 
 interface PanelColour {
   colour: string
@@ -75,27 +83,23 @@ interface PanelColour {
 }
 
 const state = reactive({
-  numberOfRows: 3,
-  numberOfColumns: 3,
+  numberOfRows: 9,
+  numberOfColumns: 9,
   panelColours: [
-    { colour: "beige", quantity: 5, quantityUsed: 0 },
-    { colour: "coral", quantity: 5, quantityUsed: 0 },
-    { colour: "pink", quantity: 7, quantityUsed: 0 },
-    // { colour: "plum", quantity: 10, quantityUsed: 0 },
-    // { colour: "silver", quantity: 10, quantityUsed: 0 },
+    { colour: "coral", quantity: 1, quantityUsed: 0 },
+    { colour: "pink", quantity: 40, quantityUsed: 0 },
+    { colour: "beige", quantity: 40, quantityUsed: 0 },
   ] as PanelColour[],
   showColourPicker: false,
-  notEnoughColours: false,
+  notEnoughPanels: false,
+  notEnoughVariety: false,
   generateFailed: false,
-  shuffle: false,
+  generating: false,
+  matrix: [] as number[][],
 })
 
-function addColour(colour: string, quantity: number) {
-  state.panelColours.push({
-    colour: colour,
-    quantity: quantity,
-    quantityUsed: 0,
-  })
+function addColour(panelColour: PanelColour) {
+  state.panelColours.push(panelColour)
   state.showColourPicker = false
 }
 
@@ -108,75 +112,105 @@ function resetQuantityUsed() {
 
 // get a random colour option that uses quantity to determine the chance of being picked
 function getColourOption(
-  colourToLeft: string | null,
-  colourAbove: string | null,
-  totalPanels: number
-): string | null {
-  const possibilities: string[] = []
-  state.panelColours.forEach((c) => {
+  colourToLeft: number | null,
+  colourAbove: number | null
+): number | null {
+  const possibilities: number[] = []
+  state.panelColours.forEach((c, index) => {
     for (let i = 0; i < c.quantity - c.quantityUsed; i++) {
-      possibilities.push(c.colour)
+      possibilities.push(index)
     }
   })
-  let option = possibilities[Math.floor(Math.random() * totalPanels)]
-  if (colourToLeft === null && colourAbove === null) return option
+
+  // if first panel return index of panelColour with highest quantity
+  if (colourToLeft === null && colourAbove === null) {
+    let highestQuantity = 0
+    let highestQuantityIndex = 0
+    state.panelColours.forEach((c, index) => {
+      if (c.quantity > highestQuantity) {
+        highestQuantity = c.quantity
+        highestQuantityIndex = index
+      }
+    })
+    return highestQuantityIndex
+  }
+
+  let option = possibilities[Math.floor(Math.random() * possibilities.length)]
   let attempts = 0
   while ((option === colourToLeft || option === colourAbove) && attempts < 20) {
-    option = possibilities[Math.floor(Math.random() * totalPanels)]
+    option = possibilities[Math.floor(Math.random() * possibilities.length)]
     attempts++
   }
+  // if (option !== undefined && option !== null) return option
   if (attempts === 20) {
     possibilities.forEach((c) => {
       if (c !== colourToLeft && c !== colourAbove) {
         return c
       }
     })
-    return null
   } else return option
+  return null
 }
 
-//? why is this not running when colour quantities change after failed generation? change numberOfRows or numberOfColumns recomputes it.
 // generate a matrix of colours, ensuring that no two adjacent colours are the same
-const matrix = computed(() => {
-  console.log("Ran")
-  if (state.shuffle) state.shuffle = false
-
+function generateMatrix(): number[][] {
+  state.notEnoughPanels = false
+  state.generateFailed = false
+  state.notEnoughVariety = false
+  state.generating = true
   if (state.panelColours.length < 2) return []
   if (state.numberOfRows < 1 || state.numberOfColumns < 1) return []
   if (state.numberOfRows > 100 || state.numberOfColumns > 100) return []
+  const totalPanelsRequired = state.numberOfRows * state.numberOfColumns
   const totalPanels = state.panelColours.reduce((acc, c) => acc + c.quantity, 0)
-  if (totalPanels < state.numberOfRows * state.numberOfColumns) {
-    state.notEnoughColours = true
+  if (totalPanels < totalPanelsRequired) {
+    state.notEnoughPanels = true
     return []
   }
-  state.notEnoughColours = false
-  state.generateFailed = false
+  // check that it is possible to generate a grid with enough variety so that no two adjacent panels are the same colour
+  // the sum of the quantity of each colour except the largest quantity must be greater than or equal to half the total number of panels required
+  const largestQuantityIndex = state.panelColours.reduce(
+    (acc, c, index) =>
+      c.quantity > acc.quantity ? { quantity: c.quantity, index } : acc,
+    { quantity: 0, index: 0 }
+  ).index
+  const sumOfOtherQuantities = state.panelColours
+    .filter((c, index) => index !== largestQuantityIndex)
+    .reduce((acc, c) => acc + c.quantity, 0)
+  if (sumOfOtherQuantities < totalPanelsRequired / 2 - 1) {
+    state.notEnoughVariety = true
+    return []
+  }
   resetQuantityUsed()
-  let matrix: string[][] = []
+  let matrix: number[][] = []
   let attempts = 1
-  while (attempts < 10000) {
+  while (attempts < 200) {
     for (let i = 0; i < state.numberOfColumns; i++) {
-      const row: string[] = []
+      const row: number[] = []
       for (let j = 0; j < state.numberOfRows; j++) {
         const colourAbove = i > 0 ? matrix[i - 1][j] : null
         const colourToLeft = j > 0 ? row[j - 1] : null
-        let colour = getColourOption(colourToLeft, colourAbove, totalPanels)
-        if (colour) {
+        let colour = getColourOption(colourToLeft, colourAbove)
+        if (colour !== null) {
           row.push(colour)
-          state.panelColours.find((c) => c.colour === colour)!.quantityUsed++
+          state.panelColours[colour]!.quantityUsed++
         } else break
       }
       if (row.length < state.numberOfRows) break
       matrix.push(row)
     }
-    if (matrix.length === state.numberOfColumns) return matrix
+    if (matrix.length === state.numberOfColumns) {
+      state.generating = false
+      return matrix
+    }
     resetQuantityUsed()
     matrix = []
     attempts++
   }
+  state.generating = false
   state.generateFailed = true
   return []
-})
+}
 
 // panelDimension will be calculated so that the whole grid is visible on the screen without scrolling
 // each panel will be a square
@@ -189,6 +223,26 @@ const panelDimension = computed(() =>
     ? panelHeight.value + "px"
     : panelWidth.value + "px"
 )
+
+function regenerateMatrix() {
+  state.matrix = generateMatrix()
+}
+
+watch(
+  () => state.numberOfRows,
+  () => {
+    state.matrix = generateMatrix()
+  }
+)
+
+watch(
+  () => state.numberOfColumns,
+  () => {
+    state.matrix = generateMatrix()
+  }
+)
+
+state.matrix = generateMatrix()
 </script>
 
 <style lang="scss" scoped>
@@ -203,6 +257,7 @@ const panelDimension = computed(() =>
 }
 
 .grid {
+  position: relative;
   display: flex;
   .column {
     .panel {
@@ -239,6 +294,26 @@ const panelDimension = computed(() =>
       justify-self: right;
       margin-left: auto;
     }
+  }
+}
+
+.loader-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(150, 150, 150, 0.3);
+  backdrop-filter: blur(12px);
+  z-index: 2;
+  .loader {
+    color: #555;
+    z-index: 3;
+    position: relative;
+    top: calc(50% - 100px);
+    left: calc(50% - 100px);
+    height: 200px;
+    width: 200px;
   }
 }
 </style>

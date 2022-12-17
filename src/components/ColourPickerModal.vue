@@ -27,7 +27,16 @@
       </div>
       <div class="modal-footer">
         <button class="close" @click="$emit('close')">Close</button>
-        <button class="add" @click="$emit('add', [colour, quantity])">
+        <button
+          class="add"
+          @click="
+            $emit('add', {
+              colour: colour,
+              quantity: quantity,
+              quantityUsed: 0,
+            })
+          "
+        >
           Add
         </button>
       </div>
@@ -46,10 +55,11 @@ import {
 } from "vue"
 import XIcon from "../components/icons/XIcon.vue"
 import { ColorChangeEvent, ColorPicker } from "vue-accessible-color-picker"
+import PanelColour from "../interfaces/PanelColour"
 
 const emit = defineEmits<{
   (e: "close"): void
-  (e: "add", colour: string, quantity: number): void
+  (e: "add", panelColour: PanelColour): void
 }>()
 
 const colour = ref("hsl(270 100% 50% / 0.8)")
@@ -85,7 +95,7 @@ onDeactivated(() => {
 <style lang="scss">
 .modal-backdrop {
   position: fixed;
-  background: var(--modal-backdrop);
+  background-color: rgba(120, 120, 120, 0.4);
   backdrop-filter: blur(2px);
   top: 0;
   left: 0;
