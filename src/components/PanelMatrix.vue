@@ -5,8 +5,8 @@
       v-for="(colour, index2) in column"
       :style="{ backgroundColor: panelColours[colour].colour }"
     >
-      {{ index2 + 1 }} down<br />
-      {{ index + 1 }} across
+      <!-- {{ index2 + 1 }} down<br />
+          {{ index + 1 }} across -->
     </div>
   </div>
 </template>
@@ -15,7 +15,7 @@
 import { defineProps } from "vue"
 import PanelColour from "../interfaces/PanelColour"
 
-const props = defineProps<{
+defineProps<{
   matrix: number[][]
   panelColours: PanelColour[]
   panelDimension: string
