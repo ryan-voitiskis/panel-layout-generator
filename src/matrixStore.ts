@@ -18,6 +18,7 @@ export const matrixStore = defineStore("matrixStore", {
     notEnoughVariety: false,
     generateFailed: false,
     showAbout: false,
+    showColourControls: false, // shows ColourControlsModal.vue, used for small screens
     matrix: [] as number[][],
   }),
   actions: {

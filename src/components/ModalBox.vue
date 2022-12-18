@@ -56,7 +56,7 @@ onDeactivated(() => {
 <style lang="scss">
 .modal-backdrop {
   position: fixed;
-  background: var(--modal-backdrop);
+  background: hsla(0, 0%, 0%, 0.5);
   backdrop-filter: blur(4px);
   top: 0;
   left: 0;
@@ -67,6 +67,7 @@ onDeactivated(() => {
   align-items: center;
   z-index: 99;
   .modal {
+    max-height: 100%;
     background-color: #fff;
     transition: background-color 200ms, color 200ms;
     border-radius: 10px;
@@ -90,16 +91,10 @@ onDeactivated(() => {
   padding: 30px 40px;
   h2 {
     font-weight: 500;
-    color: var(--darkest-text);
     line-height: 38px;
     margin: 0 20px 0 0;
-    span {
-      color: var(--dark-text);
-      font-size: 16px;
-    }
   }
   .close {
-    margin-left: auto; // right align when no h2
     padding: 0 8px;
   }
 }
@@ -109,13 +104,6 @@ onDeactivated(() => {
   margin-bottom: 40px;
   overflow-y: scroll;
   overflow-x: hidden;
-  p {
-    color: var(--dark-text);
-  }
-}
-
-.modal-body-sticky-header {
-  padding: 0 40px;
 }
 
 .modal-footer {
@@ -125,7 +113,6 @@ onDeactivated(() => {
   width: 100%;
   display: flex;
   justify-content: end;
-  background: var(--secondary);
   border-radius: 0 0 10px 10px;
   button[type="reset"] {
     margin-right: auto;
@@ -135,13 +122,25 @@ onDeactivated(() => {
   }
 }
 
-.modal-footer-plain {
-  margin-top: -20px;
-  gap: 20px;
-  padding: 20px 40px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  gap: 20px;
+@media screen and (max-width: 768px) {
+  .modal-backdrop {
+    .modal {
+      width: 100%;
+      margin: 0;
+      border-radius: 0;
+    }
+  }
+  .modal-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    padding: 20px 10px;
+  }
+  .modal-body {
+    margin: 0;
+    padding: 0 10px;
+  }
+  .modal-footer {
+    display: none;
+  }
 }
 </style>
