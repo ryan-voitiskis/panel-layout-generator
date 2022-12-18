@@ -13,9 +13,11 @@ export const matrixStore = defineStore("matrixStore", {
       { colour: "#F3F781", quantity: 100, quantityUsed: 0 },
     ] as PanelColour[],
     showColourPicker: false,
+    showArrows: false,
     notEnoughPanels: false,
     notEnoughVariety: false,
     generateFailed: false,
+    showAbout: false,
     matrix: [] as number[][],
   }),
   actions: {
@@ -38,6 +40,7 @@ export const matrixStore = defineStore("matrixStore", {
       }))
     },
 
+    // return a random colour from the panelColours array, ensuring that it is not the same as the colour to the left or above
     getColourOption(
       colourToLeft: number | null,
       colourAbove: number | null
@@ -111,6 +114,7 @@ export const matrixStore = defineStore("matrixStore", {
       return []
     },
 
+    // attempt to generate a matrix, and handle errors
     attemptGenerateMatrix() {
       this.notEnoughPanels = false
       this.generateFailed = false
@@ -141,8 +145,6 @@ export const matrixStore = defineStore("matrixStore", {
           ? totalPanelsRequired / 2
           : totalPanelsRequired / 2 - 1
       if (sumOfOtherQuantities < minSumOfOtherQuantities) {
-        console.log("f")
-
         this.notEnoughVariety = true
         return []
       }

@@ -5,15 +5,25 @@
       v-for="(colour, index2) in column"
       :style="{ backgroundColor: panelColours[colour].colour }"
     >
-      <!-- {{ index2 + 1 }} down<br />
-          {{ index + 1 }} across -->
+      <svg
+        viewBox="0 0 100 100"
+        v-if="store.showArrows"
+        :style="{
+          fill: panelColours[colour].textColour,
+        }"
+      >
+        <text x="26" y="44">{{ index2 + 1 }} 🠗</text>
+        <text x="26" y="98">{{ index + 1 }} 🠖</text>
+      </svg>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { defineProps } from "vue"
+import { matrixStore } from "../matrixStore"
 import PanelColour from "../interfaces/PanelColour"
+const store = matrixStore()
 
 defineProps<{
   matrix: number[][]
@@ -27,11 +37,11 @@ defineProps<{
   .panel {
     width: v-bind(panelDimension);
     height: v-bind(panelDimension);
-    display: flex;
-    flex: 1;
-    font-size: 22px;
-    justify-content: center;
-    align-items: center;
+    svg {
+      font-size: 2em;
+      height: 80%;
+      width: 100%;
+    }
   }
 }
 </style>

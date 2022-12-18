@@ -26,12 +26,38 @@
           :index="index"
           :key="index"
         />
-        <div class="colour" v-for="(colour, index) in store.panelColours"></div>
       </div>
-      <button @click="store.showColourPicker = true">Add colour</button>
-      <button @click="store.attemptGenerateMatrix">
-        {{ store.matrix.length ? "Shuffle" : "Generate" }}
-      </button>
+      <div class="button-controls">
+        <button
+          class="square-icon-button"
+          @click="store.showColourPicker = true"
+        >
+          <PaletteIcon /><label>Add colour</label>
+        </button>
+        <button
+          class="square-icon-button"
+          @click="store.showArrows = !store.showArrows"
+        >
+          <ArrowsIcon /><label
+            >{{ store.showArrows ? "Hide" : "Show" }} arrows</label
+          >
+        </button>
+        <button
+          class="square-icon-button large"
+          @click="store.attemptGenerateMatrix"
+        >
+          <ShuffleIcon />
+          <label>{{ store.matrix.length ? "Shuffle" : "Generate" }}</label>
+        </button>
+        <div class="secondary-button-controls">
+          <button class="secondary-button" @click="store.showAbout = true">
+            <InfoIcon />
+          </button>
+          <button class="secondary-button" @click="print">
+            <PrintIcon />
+          </button>
+        </div>
+      </div>
     </div>
     <p v-if="store.notEnoughPanels">Not enough panels to fill the grid.</p>
     <p v-if="store.generateFailed">
@@ -50,11 +76,19 @@
       />
     </div>
   </div>
-  <ColourPickerModal
+  <ModalBox
     v-if="store.showColourPicker"
     @close="store.showColourPicker = false"
-    @add="store.addColour($event)"
-  />
+  >
+    <ColourPickerModal />
+  </ModalBox>
+  <ModalBox
+    v-if="store.showAbout"
+    @close="store.showAbout = false"
+    width="540px"
+  >
+    <AboutModal />
+  </ModalBox>
 </template>
 
 <script setup lang="ts">
@@ -63,6 +97,13 @@ import { matrixStore } from "./matrixStore"
 import ColourSwatch from "./components/ColourSwatch.vue"
 import ColourPickerModal from "./components/ColourPickerModal.vue"
 import PanelMatrix from "./components/PanelMatrix.vue"
+import PaletteIcon from "./components/icons/PaletteIcon.vue"
+import ShuffleIcon from "./components/icons/ShuffleIcon.vue"
+import InfoIcon from "./components/icons/InfoIcon.vue"
+import ArrowsIcon from "./components/icons/ArrowsIcon.vue"
+import AboutModal from "./components/AboutModal.vue"
+import ModalBox from "./components/ModalBox.vue"
+import PrintIcon from "./components/icons/PrintIcon.vue"
 const store = matrixStore()
 
 const screenHeight = window.innerHeight - 140
@@ -73,6 +114,14 @@ const panelDimension = computed(() =>
   panelHeight.value < panelWidth.value
     ? panelHeight.value + "px"
     : panelWidth.value + "px"
+)
+
+function print() {
+  window.print()
+}
+
+const coloursTemplateColumns = computed(
+  () => `repeat(${store.panelColours.length}, 120px)`
 )
 
 watch(
@@ -89,17 +138,12 @@ store.attemptGenerateMatrix()
 </script>
 
 <style lang="scss" scoped>
-p {
-  font-size: 24px;
-  color: #777;
-}
 .app {
   display: flex;
   flex-direction: column;
   align-items: center;
   height: 100vh;
   width: 100vw;
-  background-color: #f5f5f5;
 }
 
 .grid {
@@ -109,13 +153,16 @@ p {
 
 .controls {
   height: 140px;
-  display: flex;
+  max-width: 1800px;
+  display: grid;
+  grid-template-columns: auto minmax(150px, 1fr) auto;
+  grid-template-rows: 140px;
   gap: 10px;
-  align-items: center;
   padding: 0 10px;
   .row-col-controls {
+    align-self: center;
     display: grid;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: 38px 38px;
     grid-template-columns: 1fr 100px;
     gap: 10px;
     label {
@@ -135,8 +182,47 @@ p {
     }
   }
   .colours {
+    height: 140px;
+    padding: 10px 0;
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: v-bind(coloursTemplateColumns);
+    overflow: scroll;
+  }
+  .button-controls {
     display: flex;
+    width: 445px;
     gap: 10px;
+    height: 140px;
+    padding: 10px 0;
+    .square-icon-button {
+      display: grid;
+      grid-template-rows: 80px 40px;
+      width: 120px;
+      height: 120px;
+      svg {
+        margin: auto;
+        height: 60px;
+        width: 60px;
+      }
+      label {
+        font-size: 16px;
+        vertical-align: middle;
+      }
+    }
+    .secondary-button-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      .secondary-button {
+        width: 55px;
+        height: 55px;
+        svg {
+          height: 30px;
+          width: 30px;
+        }
+      }
+    }
   }
 }
 
@@ -157,6 +243,16 @@ p {
     left: calc(50% - 100px);
     height: 200px;
     width: 200px;
+  }
+}
+
+@media print {
+  .controls {
+    display: none;
+  }
+  .grid {
+    padding: 0 10cm;
+    page-break-inside: avoid;
   }
 }
 </style>

@@ -11,8 +11,10 @@
     stroke-linecap="round"
     stroke-linejoin="round"
   >
-    <line x1="18" y1="6" x2="6" y2="18"></line>
-    <line x1="6" y1="6" x2="18" y2="18"></line>
+    <polyline points="17 11 21 7 17 3"></polyline>
+    <line x1="21" y1="7" x2="9" y2="7"></line>
+    <polyline points="7 21 3 17 7 13"></polyline>
+    <line x1="15" y1="17" x2="3" y2="17"></line>
   </svg>
 </template>
 

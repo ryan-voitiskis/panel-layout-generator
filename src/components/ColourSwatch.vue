@@ -22,10 +22,12 @@ import PanelColour from "../interfaces/PanelColour"
 import XIcon from "./icons/XIcon.vue"
 const store = matrixStore()
 
-defineProps<{
+const props = defineProps<{
   colour: PanelColour
   index: number
 }>()
+
+const textColour = store.panelColours[props.index].textColour
 </script>
 
 <style lang="scss" scoped>
@@ -42,6 +44,7 @@ defineProps<{
     align-self: center;
     text-align: center;
     display: block;
+    color: v-bind(textColour);
   }
   input {
     border: none;
@@ -53,6 +56,7 @@ defineProps<{
     width: 100px;
   }
   .remove {
+    color: v-bind(textColour);
     grid-area: 1 / 1 / 2 / 3;
     background: transparent;
     border-radius: 0;

@@ -1,61 +1,44 @@
 <template>
-  <div class="modal-backdrop" @click.self="$emit('close')">
-    <div class="modal">
-      <div class="modal-header">
-        <h2>Pick a colour</h2>
-        <button class="close icon-only-button" @click="$emit('close')">
-          <XIcon />
-        </button>
-      </div>
-      <div class="modal-body">
-        <ColorPicker
-          alpha-channel="hide"
-          :color="colour"
-          @color-change="updateColour"
-          :visible-formats="['hsl']"
-        />
-        <label for="quantity">
-          Quantity
-          <input
-            type="number"
-            id="quantity"
-            v-model="quantity"
-            min="1"
-            max="1000"
-          />
-        </label>
-      </div>
-      <div class="modal-footer">
-        <button class="close" @click="$emit('close')">Close</button>
-        <button
-          class="add"
-          @click="
-            $emit('add', {
-              colour: colour,
-              quantity: quantity,
-              quantityUsed: 0,
-            })
-          "
-        >
-          Add
-        </button>
-      </div>
-    </div>
+  <div class="modal-header">
+    <h2>Pick a colour</h2>
+    <button
+      class="close icon-only-button"
+      @click="store.showColourPicker = false"
+    >
+      <XIcon />
+    </button>
+  </div>
+  <div class="modal-body">
+    <ColorPicker
+      alpha-channel="hide"
+      :color="colour"
+      @color-change="updateColour"
+      :visible-formats="['hsl']"
+    />
+    <label for="quantity">
+      Quantity
+      <input
+        type="number"
+        id="quantity"
+        v-model="quantity"
+        min="1"
+        max="1000"
+      />
+    </label>
+  </div>
+  <div class="modal-footer">
+    <button class="close" @click="store.showColourPicker = false">Close</button>
+    <button class="add" @click="addColour">Add</button>
   </div>
 </template>
 
 <script setup lang="ts">
-import {
-  ref,
-  onMounted,
-  defineEmits,
-  onBeforeUnmount,
-  onActivated,
-  onDeactivated,
-} from "vue"
+import { ref, defineEmits } from "vue"
 import XIcon from "../components/icons/XIcon.vue"
 import { ColorChangeEvent, ColorPicker } from "vue-accessible-color-picker"
 import PanelColour from "../interfaces/PanelColour"
+import { matrixStore } from "../matrixStore"
+const store = matrixStore()
 
 const emit = defineEmits<{
   (e: "close"): void
@@ -63,33 +46,36 @@ const emit = defineEmits<{
 }>()
 
 const colour = ref("hsl(270 100% 50% / 0.8)")
+const textColour = ref("#111")
 const quantity = ref(1)
+
+const addColour = () =>
+  store.addColour({
+    colour: colour.value,
+    textColour: textColour.value,
+    quantity: quantity.value,
+    quantityUsed: 0,
+  })
+
+// function to determine the luminance of a colour
+// https://stackoverflow.com/a/56678483/7259172
+function luminance(r: number, g: number, b: number) {
+  const a = [r, g, b].map((v) => {
+    v / 255
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)
+  })
+  return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722
+}
 
 function updateColour(eventData: ColorChangeEvent) {
   colour.value = eventData.cssColor
+  const luminanceValue = luminance(
+    eventData.colors.rgb.r,
+    eventData.colors.rgb.g,
+    eventData.colors.rgb.b
+  )
+  textColour.value = luminanceValue > 0.179 ? "#111" : "#fff"
 }
-
-function escapeClose(e: KeyboardEvent) {
-  if (e.key === "Escape") emit("close")
-}
-
-onMounted(() => {
-  document.body.addEventListener("keyup", escapeClose)
-  document.body.style.overflow = "hidden" // prevent scrolling of body when modal shown
-})
-onBeforeUnmount(() => {
-  document.body.style.overflow = "visible"
-  document.body.removeEventListener("keyup", escapeClose)
-})
-
-onActivated(() => {
-  document.body.addEventListener("keyup", escapeClose)
-  document.body.style.overflow = "hidden" // prevent scrolling of body when modal shown
-})
-onDeactivated(() => {
-  document.body.style.overflow = "visible"
-  document.body.removeEventListener("keyup", escapeClose)
-})
 </script>
 
 <style lang="scss">
@@ -129,13 +115,8 @@ onDeactivated(() => {
   padding: 30px 40px;
   h2 {
     font-weight: 500;
-    color: var(--darkest-text);
     line-height: 38px;
     margin: 0 20px 0 0;
-    span {
-      color: var(--dark-text);
-      font-size: 16px;
-    }
   }
   .close {
     margin-left: auto; // right align when no h2
