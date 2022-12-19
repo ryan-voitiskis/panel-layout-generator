@@ -66,7 +66,7 @@
             class="secondary-button hide-on-large"
             @click="store.showArrows = !store.showArrows"
           >
-            <ArrowsIcon />
+            <GridIcon />
           </button>
         </div>
       </div>
