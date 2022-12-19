@@ -1,6 +1,6 @@
 <template>
   <div class="modal-header">
-    <h2>About Panel Layout Generator</h2>
+    <h2>Edit panel colours</h2>
     <button
       class="close icon-only-button"
       @click="store.showColourControls = false"

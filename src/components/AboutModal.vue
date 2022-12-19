@@ -1,6 +1,6 @@
 <template>
   <div class="modal-header">
-    <h2>About <span>Panel layout generator</span></h2>
+    <h2><span>Panel layout generator</span></h2>
     <button class="close icon-only-button" @click="store.showAbout = false">
       <XIcon />
     </button>
@@ -94,7 +94,6 @@ const store = matrixStore()
 }
 h2 {
   span {
-    margin-left: 4px;
     font-size: 28px;
     font-weight: 600;
     line-height: 38px;

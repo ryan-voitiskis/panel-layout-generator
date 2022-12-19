@@ -12,6 +12,7 @@ export const matrixStore = defineStore("matrixStore", {
       { colour: "#A9F5D0", quantity: 100, quantityUsed: 0 },
       { colour: "#F3F781", quantity: 100, quantityUsed: 0 },
     ] as PanelColour[],
+    possibilities: [] as number[], // array of indexes of panelColours, used for generating matrix
     showColourPicker: false,
     showArrows: false,
     notEnoughPanels: false,
@@ -34,11 +35,27 @@ export const matrixStore = defineStore("matrixStore", {
       this.attemptGenerateMatrix()
     },
 
-    resetQuantityUsed() {
-      this.panelColours = this.panelColours.map((c) => ({
-        ...c,
-        quantityUsed: 0,
-      }))
+    // return index of panelColour with highest quantity
+    getHighestQuantityIndex(): number {
+      let highestQuantity = 0
+      let highestQuantityIndex = 0
+      this.panelColours.forEach((c, index) => {
+        if (c.quantity > highestQuantity) {
+          highestQuantity = c.quantity
+          highestQuantityIndex = index
+        }
+      })
+      return highestQuantityIndex
+    },
+
+    getFirstColour(): number {
+      let highestQuantityIndex = this.getHighestQuantityIndex()
+      const optionIndex = this.possibilities.findIndex(
+        (i) => i === highestQuantityIndex
+      )
+      const colour = this.possibilities[optionIndex]
+      this.possibilities.splice(optionIndex, 1)
+      return colour
     },
 
     // return a random colour from the panelColours array, ensuring that it is not the same as the colour to the left or above
@@ -46,50 +63,58 @@ export const matrixStore = defineStore("matrixStore", {
       colourToLeft: number | null,
       colourAbove: number | null
     ): number | null {
-      const possibilities: number[] = []
-      this.panelColours.forEach((c, index) => {
-        for (let i = 0; i < c.quantity - c.quantityUsed; i++) {
-          possibilities.push(index)
-        }
-      })
-
-      // if first panel return index of panelColour with highest quantity
-      if (colourToLeft === null && colourAbove === null) {
-        let highestQuantity = 0
-        let highestQuantityIndex = 0
-        this.panelColours.forEach((c, index) => {
-          if (c.quantity > highestQuantity) {
-            highestQuantity = c.quantity
-            highestQuantityIndex = index
-          }
-        })
-        return highestQuantityIndex
-      }
-
-      let option =
-        possibilities[Math.floor(Math.random() * possibilities.length)]
+      if (colourToLeft === null && colourAbove === null)
+        return this.getFirstColour()
+      let optionIndex = Math.floor(Math.random() * this.possibilities.length)
       let attempts = 0
       while (
-        (option === colourToLeft || option === colourAbove) &&
+        (this.possibilities[optionIndex] === colourToLeft ||
+          this.possibilities[optionIndex] === colourAbove) &&
         attempts < 20
       ) {
-        option = possibilities[Math.floor(Math.random() * possibilities.length)]
+        optionIndex = Math.floor(Math.random() * this.possibilities.length)
         attempts++
       }
       if (attempts === 20) {
-        possibilities.forEach((c) => {
+        this.possibilities.forEach((c, index) => {
           if (c !== colourToLeft && c !== colourAbove) {
+            this.possibilities.splice(index, 1)
             return c
           }
         })
-      } else return option
+      } else {
+        const colour = this.possibilities[optionIndex]
+        this.possibilities.splice(optionIndex, 1)
+        return colour
+      }
       return null
+    },
+
+    generatePossibilites() {
+      this.possibilities = []
+      this.panelColours.forEach((c, index) => {
+        for (let i = 0; i < c.quantity; i++) {
+          this.possibilities.push(index)
+        }
+      })
+    },
+
+    setQuantityUsed() {
+      this.panelColours.forEach((c, index) => {
+        this.panelColours[index].quantityUsed = 0
+      })
+      this.matrix.forEach((row) => {
+        row.forEach((c) => {
+          this.panelColours[c].quantityUsed++
+        })
+      })
     },
 
     // generate a matrix of colours, ensuring that no two adjacent colours are the same
     generateMatrix(): number[][] {
       let matrix: number[][] = []
       let attempts = 1
+      this.generatePossibilites()
       while (attempts < 1000) {
         for (let i = 0; i < this.numberOfColumns; i++) {
           const row: number[] = []
@@ -99,16 +124,13 @@ export const matrixStore = defineStore("matrixStore", {
             let colour = this.getColourOption(colourToLeft, colourAbove)
             if (colour !== null) {
               row.push(colour)
-              this.panelColours[colour]!.quantityUsed++
             } else break
           }
           if (row.length < this.numberOfRows) break
           matrix.push(row)
         }
-        if (matrix.length === this.numberOfColumns) {
-          return matrix
-        }
-        this.resetQuantityUsed()
+        if (matrix.length === this.numberOfColumns) return matrix
+        this.generatePossibilites()
         matrix = []
         attempts++
       }
@@ -133,11 +155,7 @@ export const matrixStore = defineStore("matrixStore", {
         this.notEnoughPanels = true
         return
       }
-      const largestQuantityIndex = this.panelColours.reduce(
-        (acc, c, index) =>
-          c.quantity > acc.quantity ? { quantity: c.quantity, index } : acc,
-        { quantity: 0, index: 0 }
-      ).index
+      const largestQuantityIndex = this.getHighestQuantityIndex()
       const sumOfOtherQuantities = this.panelColours
         .filter((c, index) => index !== largestQuantityIndex)
         .reduce((acc, c) => acc + c.quantity, 0)
@@ -146,14 +164,14 @@ export const matrixStore = defineStore("matrixStore", {
           ? totalPanelsRequired / 2
           : totalPanelsRequired / 2 - 1
       if (sumOfOtherQuantities < minSumOfOtherQuantities) {
+        this.matrix = []
         this.notEnoughVariety = true
-        return []
+        return
       }
-      this.resetQuantityUsed()
       this.matrix = this.generateMatrix()
       if (this.matrix.length === 0) {
         this.generateFailed = true
-      }
+      } else this.setQuantityUsed()
     },
   },
 })

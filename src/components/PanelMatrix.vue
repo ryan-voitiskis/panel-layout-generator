@@ -12,8 +12,8 @@
           fill: panelColours[colour].textColour,
         }"
       >
-        <text x="26" y="44">{{ index2 + 1 }} 🠗</text>
-        <text x="26" y="98">{{ index + 1 }} 🠖</text>
+        <text x="50" y="36">R:{{ index2 + 1 }}</text>
+        <text x="50" y="80">C:{{ index + 1 }}</text>
       </svg>
     </div>
   </div>
@@ -39,8 +39,12 @@ defineProps<{
     height: v-bind(panelDimension);
     svg {
       font-size: 2em;
-      height: 80%;
+      height: 90%;
       width: 100%;
+      text {
+        text-anchor: middle;
+        dominant-baseline: middle;
+      }
     }
   }
 }
