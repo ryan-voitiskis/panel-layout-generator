@@ -44,8 +44,8 @@
           class="square-icon-button hide-on-mobile"
           @click="store.showArrows = !store.showArrows"
         >
-          <ArrowsIcon /><label
-            >{{ store.showArrows ? "Hide" : "Show" }} arrows</label
+          <GridIcon /><label
+            >{{ store.showArrows ? "Hide" : "Show" }} numbers</label
           >
         </button>
         <button
@@ -121,10 +121,10 @@ import PanelMatrix from "./components/PanelMatrix.vue"
 import PaletteIcon from "./components/icons/PaletteIcon.vue"
 import ShuffleIcon from "./components/icons/ShuffleIcon.vue"
 import InfoIcon from "./components/icons/InfoIcon.vue"
-import ArrowsIcon from "./components/icons/ArrowsIcon.vue"
 import AboutModal from "./components/AboutModal.vue"
 import ModalBox from "./components/ModalBox.vue"
 import PrintIcon from "./components/icons/PrintIcon.vue"
+import GridIcon from "./components/icons/GridIcon.vue"
 const store = matrixStore()
 
 const screenHeight = window.innerHeight - 140
