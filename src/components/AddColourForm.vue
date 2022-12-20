@@ -4,7 +4,7 @@
       alpha-channel="hide"
       :color="colour"
       @color-change="updateColour"
-      :visible-formats="['hsl']"
+      :visible-formats="['hex']"
     />
     <div class="quantity-control">
       <label for="quantity_mobile">Quantity</label>
@@ -26,7 +26,7 @@ import { ColorPicker, ColorChangeEvent } from "vue-accessible-color-picker"
 import { matrixStore } from "../matrixStore"
 const store = matrixStore()
 
-const colour = ref("hsl(270 100% 50% / 0.8)")
+const colour = ref("#ffa7ef")
 const textColour = ref("#111")
 const quantity = ref(1)
 
