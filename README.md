@@ -1,5 +1,7 @@
 # Panel layout generator
 
+[View the demo](https://panel-layout-generator.com/)
+
 Simple front-end web app for generating a layout for acoustic panel installations. Generated matrix is random and attempts to use the available panels evenly relative to their quantities. Panel colours can be added and deleted, and their quantities edited.
 
 Using Vue 3 + TypeScript + Vite
