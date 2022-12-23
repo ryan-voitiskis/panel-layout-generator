@@ -209,7 +209,8 @@ store.attemptGenerateMatrix()
   display: grid;
   grid-gap: 10px;
   grid-template-columns: v-bind(coloursTemplateColumns);
-  overflow: scroll;
+  overflow-x: scroll;
+  overflow-y: hidden;
 }
 
 .button-controls {
@@ -245,26 +246,6 @@ store.attemptGenerateMatrix()
         width: 30px;
       }
     }
-  }
-}
-
-.loader-backdrop {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  background-color: rgba(150, 150, 150, 0.3);
-  backdrop-filter: blur(12px);
-  z-index: 2;
-  .loader {
-    color: #555;
-    z-index: 3;
-    position: relative;
-    top: calc(50% - 100px);
-    left: calc(50% - 100px);
-    height: 200px;
-    width: 200px;
   }
 }
 

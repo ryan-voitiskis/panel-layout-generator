@@ -3,14 +3,14 @@ import PanelColour from "./interfaces/PanelColour"
 
 export const matrixStore = defineStore("matrixStore", {
   state: () => ({
-    numberOfRows: 20,
-    numberOfColumns: 25,
+    numberOfRows: 8,
+    numberOfColumns: 12,
     panelColours: [
-      { colour: "#F5D0A9", quantity: 100, quantityUsed: 0 },
-      { colour: "#F5A9BC", quantity: 100, quantityUsed: 0 },
-      { colour: "#A9BCF5", quantity: 100, quantityUsed: 0 },
-      { colour: "#A9F5D0", quantity: 100, quantityUsed: 0 },
-      { colour: "#F3F781", quantity: 100, quantityUsed: 0 },
+      { colour: "#F5D0A9", quantity: 20, quantityUsed: 0 },
+      { colour: "#F5A9BC", quantity: 20, quantityUsed: 0 },
+      { colour: "#A9BCF5", quantity: 20, quantityUsed: 0 },
+      { colour: "#A9F5D0", quantity: 20, quantityUsed: 0 },
+      { colour: "#F3F781", quantity: 20, quantityUsed: 0 },
     ] as PanelColour[],
     possibilities: [] as number[], // array of indexes of panelColours, used for generating matrix
     showColourPicker: false,
