@@ -204,7 +204,7 @@ store.attemptGenerateMatrix()
 }
 
 .colours {
-  height: 140px;
+  height: 138px; // 140px - 2px so scroll bar doesn't touch grid
   padding: 10px 0;
   display: grid;
   grid-gap: 10px;
