@@ -6,19 +6,19 @@ export const matrixStore = defineStore("matrixStore", {
     numberOfRows: 8,
     numberOfColumns: 12,
     panelColours: [
-      { colour: "#F5D0A9", quantity: 20, quantityUsed: 0 },
-      { colour: "#F5A9BC", quantity: 20, quantityUsed: 0 },
-      { colour: "#A9BCF5", quantity: 20, quantityUsed: 0 },
-      { colour: "#A9F5D0", quantity: 20, quantityUsed: 0 },
-      { colour: "#F3F781", quantity: 20, quantityUsed: 0 },
+      { colour: "#F5D0A9", textColour: "#111", quantity: 20, quantityUsed: 0 },
+      { colour: "#F5A9BC", textColour: "#111", quantity: 20, quantityUsed: 0 },
+      { colour: "#A9BCF5", textColour: "#111", quantity: 20, quantityUsed: 0 },
+      { colour: "#A9F5D0", textColour: "#111", quantity: 20, quantityUsed: 0 },
+      { colour: "#F3F781", textColour: "#111", quantity: 20, quantityUsed: 0 },
     ] as PanelColour[],
     possibilities: [] as number[], // array of indexes of panelColours, used for generating matrix
-    showColourPicker: false,
-    showArrows: false,
+    showColourPicker: false, // shows ColourPickerModal.vue
+    showNumbers: false,
     notEnoughPanels: false,
     notEnoughVariety: false,
     generateFailed: false,
-    showAbout: false,
+    showAbout: false, // shows AboutModal.vue
     showColourControls: false, // shows ColourControlsModal.vue, used for small screens
     matrix: [] as number[][],
   }),
@@ -137,24 +137,9 @@ export const matrixStore = defineStore("matrixStore", {
       return []
     },
 
-    // attempt to generate a matrix, and handle errors
-    attemptGenerateMatrix() {
-      this.notEnoughPanels = false
-      this.generateFailed = false
+    // if not enough variety of colours, return false
+    testVariety(totalPanelsRequired: number) {
       this.notEnoughVariety = false
-      if (this.panelColours.length < 2) return
-      if (this.numberOfRows < 1 || this.numberOfColumns < 1) return
-      if (this.numberOfRows > 51 || this.numberOfColumns > 51) return
-      const totalPanelsRequired = this.numberOfRows * this.numberOfColumns
-      const totalPanels = this.panelColours.reduce(
-        (acc, c) => acc + c.quantity,
-        0
-      )
-      if (totalPanels < totalPanelsRequired) {
-        this.matrix = []
-        this.notEnoughPanels = true
-        return
-      }
       const largestQuantityIndex = this.getHighestQuantityIndex()
       const sumOfOtherQuantities = this.panelColours
         .filter((c, index) => index !== largestQuantityIndex)
@@ -166,8 +151,37 @@ export const matrixStore = defineStore("matrixStore", {
       if (sumOfOtherQuantities < minSumOfOtherQuantities) {
         this.matrix = []
         this.notEnoughVariety = true
-        return
+        return false
       }
+      return true
+    },
+
+    testNotEnoughPanels(totalPanelsRequired: number) {
+      this.notEnoughPanels = false
+      const totalPanels = this.panelColours.reduce(
+        (acc, c) => acc + c.quantity,
+        0
+      )
+      if (totalPanels < totalPanelsRequired) {
+        this.matrix = []
+        this.notEnoughPanels = true
+        return false
+      }
+      return true
+    },
+
+    // attempt to generate a matrix, and handle errors
+    attemptGenerateMatrix() {
+      this.generateFailed = false
+      if (this.panelColours.length < 2) return
+      if (this.numberOfRows < 1 || this.numberOfColumns < 1) return
+      if (this.numberOfRows > 51 || this.numberOfColumns > 51) return
+      const totalPanelsRequired = this.numberOfRows * this.numberOfColumns
+
+      // prevent running generateMatrix with an array of panelColours that wont work
+      if (!this.testNotEnoughPanels(totalPanelsRequired)) return
+      if (!this.testVariety(totalPanelsRequired)) return
+
       this.matrix = this.generateMatrix()
       if (this.matrix.length === 0) {
         this.generateFailed = true

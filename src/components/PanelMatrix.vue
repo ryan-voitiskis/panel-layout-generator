@@ -4,10 +4,11 @@
       class="panel"
       v-for="(colour, index2) in column"
       :style="{ backgroundColor: panelColours[colour].colour }"
+      data-test="panel"
     >
       <svg
         viewBox="0 0 100 100"
-        v-if="store.showArrows"
+        v-if="store.showNumbers"
         :style="{
           fill: panelColours[colour].textColour,
         }"

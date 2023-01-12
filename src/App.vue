@@ -31,51 +31,66 @@
         <button
           class="square-icon-button hide-on-large"
           @click="store.showColourControls = true"
+          id="open_edit_colours"
         >
           <PaletteIcon /><label>Edit colours</label>
         </button>
         <button
           class="square-icon-button hide-on-mobile"
           @click="store.showColourPicker = true"
+          id="open_add_colour"
         >
           <PaletteIcon /><label>Add colour</label>
         </button>
         <button
           class="square-icon-button hide-on-mobile"
-          @click="store.showArrows = !store.showArrows"
+          @click="store.showNumbers = !store.showNumbers"
+          id="toggle_numbers"
         >
           <GridIcon /><label
-            >{{ store.showArrows ? "Hide" : "Show" }} numbers</label
+            >{{ store.showNumbers ? "Hide" : "Show" }} numbers</label
           >
         </button>
         <button
           class="square-icon-button large"
           @click="store.attemptGenerateMatrix"
+          id="shuffle"
         >
           <ShuffleIcon />
           <label>{{ store.matrix.length ? "Shuffle" : "Generate" }}</label>
         </button>
         <div class="secondary-button-controls">
-          <button class="secondary-button" @click="store.showAbout = true">
+          <button
+            class="secondary-button"
+            @click="store.showAbout = true"
+            id="open_about"
+          >
             <InfoIcon />
           </button>
-          <button class="secondary-button hide-on-mobile" @click="print">
+          <button
+            class="secondary-button hide-on-mobile"
+            @click="print"
+            id="print"
+          >
             <PrintIcon />
           </button>
           <button
             class="secondary-button hide-on-large"
-            @click="store.showArrows = !store.showArrows"
+            @click="store.showNumbers = !store.showNumbers"
+            id="toggle_numbers_mobile"
           >
             <GridIcon />
           </button>
         </div>
       </div>
     </div>
-    <p v-if="store.notEnoughPanels">Not enough panels to fill the grid.</p>
-    <p v-if="store.generateFailed">
+    <p v-if="store.notEnoughPanels" id="not_enough_panels_msg">
+      Not enough panels to fill the grid.
+    </p>
+    <p v-if="store.generateFailed" id="generate_failed_msg">
       Failed to generate a grid. Unknown reason.
     </p>
-    <p v-if="store.notEnoughVariety">
+    <p v-if="store.notEnoughVariety" id="not_enough_variety_msg">
       Not enough variety of panel colours. Probably too many of one colour and
       not enough of the others.
     </p>

@@ -7,16 +7,16 @@
       :visible-formats="['hex']"
     />
     <div class="quantity-control">
-      <label for="quantity_mobile">Quantity</label>
+      <label for="quantity">Quantity</label>
       <input
         type="number"
-        id="quantity_mobile"
+        id="quantity"
         v-model="quantity"
         min="1"
         max="1000"
       />
     </div>
-    <button class="add" @click="addColour">Add</button>
+    <button id="add_colour" class="add" @click="addColour">Add</button>
   </div>
 </template>
 
