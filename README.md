@@ -10,15 +10,16 @@ Using Vue 3 + TypeScript + Vite
 
 - [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
 
-### License
+## License
 
 This project is licensed under the MIT License.
 
-### Contributions
+## Contributions
 
-Crate Guide is an open source project, contributions are welcome.
+Panel layout generator is an open source project, contributions are welcome.
 
-### Author
+## Author
 
 Created and maintained by Ryan Voitiskis.
-[ryanvoitiskis@pm.me](mailto:ryanvoitiskis@pm.me) | [GitHub](https://github.com/ryan-voitiskis)
+
+[ryanvoitiskis.com](https://ryanvoitiskis.com) | [ryanvoitiskis@pm.me](mailto:ryanvoitiskis@pm.me) | [GitHub](https://github.com/ryan-voitiskis)
