@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from "vue"
+import { defineProps, computed } from "vue"
 import { matrixStore } from "../matrixStore"
 import PanelColour from "../interfaces/PanelColour"
 import XIcon from "./icons/XIcon.vue"
@@ -29,7 +29,7 @@ const props = defineProps<{
   index: number
 }>()
 
-const textColour = store.panelColours[props.index].textColour
+const textColour = computed(() => store.panelColours[props.index].textColour)
 </script>
 
 <style lang="scss" scoped>
