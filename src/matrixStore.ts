@@ -137,13 +137,13 @@ export const matrixStore = defineStore("matrixStore", {
       return []
     },
 
-    // if not enough variety of colours, return false
+    // if not enough variety of colours, returns false
     testVariety(totalPanelsRequired: number) {
       this.notEnoughVariety = false
       const largestQuantityIndex = this.getHighestQuantityIndex()
       const sumOfOtherQuantities = this.panelColours
         .filter((c, index) => index !== largestQuantityIndex)
-        .reduce((acc, c) => acc + c.quantity, 0)
+        .reduce((acc, c) => acc + Math.abs(c.quantity), 0)
       const minSumOfOtherQuantities =
         totalPanelsRequired % 2 === 0
           ? totalPanelsRequired / 2
@@ -159,7 +159,7 @@ export const matrixStore = defineStore("matrixStore", {
     testNotEnoughPanels(totalPanelsRequired: number) {
       this.notEnoughPanels = false
       const totalPanels = this.panelColours.reduce(
-        (acc, c) => acc + c.quantity,
+        (acc, c) => acc + Math.abs(c.quantity),
         0
       )
       if (totalPanels < totalPanelsRequired) {

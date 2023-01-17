@@ -21,7 +21,7 @@ describe("AddColourForm", () => {
   let panelColoursLength: number
 
   beforeEach(() => {
-    setActivePinia(createPinia()) // * https://pinia.vuejs.org/cookbook/testing.html#unit-testing-a-store
+    setActivePinia(createPinia())
     store = matrixStore()
     wrapper = mount(AddColourForm, {
       global: {
@@ -32,8 +32,6 @@ describe("AddColourForm", () => {
     })
     quantityInput = wrapper.find("#quantity")
     submitButton = wrapper.find("#add_colour")
-
-    // get panelColours length before adding colour
     panelColoursLength = store.panelColours.length
   })
 
@@ -41,18 +39,18 @@ describe("AddColourForm", () => {
     wrapper.unmount()
   })
 
-  test("submitting adds colour to store with correct quantity", () => {
-    // add colour to store
-    quantityInput.setValue(28)
+  test("submitting adds colour to store", () => {
     submitButton.trigger("click")
+    expect(store.panelColours.length).toBe(panelColoursLength + 1)
+  })
 
-    // changes to the store are the expected outcomes of the fn, not visual changes
-    expect(store.panelColours.length).toBe(panelColoursLength + 1) // test colour is added to store
-    expect(store.panelColours[panelColoursLength].quantity).toBe(28) // test colour is added to store with correct quantity
+  test("submitting adds colour to store with correct quantity", () => {
+    quantityInput.setValue(128)
+    submitButton.trigger("click")
+    expect(store.panelColours[panelColoursLength].quantity).toBe(128)
   })
 
   // test colour is added to store with correct textColour
-  // should be #fff for emitted dark colours and #111 for emitted light colours
   test.each([
     { rgb: { r: 0, g: 0, b: 0 }, textColour: "#fff" },
     { rgb: { r: 1, g: 1, b: 1 }, textColour: "#111" },
@@ -61,14 +59,10 @@ describe("AddColourForm", () => {
   ])(
     "should set textColour appropriate to %s when color picker emits %p",
     (data) => {
-      // emit colour from colour picker
       wrapper
         .findComponent({ name: "ColorPicker" })
         .vm.$emit("color-change", { colors: { rgb: data.rgb } })
-
-      // click submit button
       submitButton.trigger("click")
-
       expect(store.panelColours[panelColoursLength].textColour).toBe(
         data.textColour
       )

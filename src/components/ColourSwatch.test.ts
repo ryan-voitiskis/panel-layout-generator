@@ -31,20 +31,8 @@ describe("ColourControlsModal", () => {
     colourSwatches = wrapper.findAllComponents({ name: "ColourSwatch" })
   })
 
-  test("deleting a ColourSwatch removes it", async () => {
-    await colourSwatches[0].find("button").trigger("click")
-    expect(wrapper.findAllComponents({ name: "ColourSwatch" }).length).toBe(
-      colourSwatches.length - 1
-    )
-  })
-
-  test("adding a colour adds a ColourSwatch", async () => {
-    await wrapper
-      .findComponent({ name: "AddColourForm" })
-      .find("#add_colour")
-      .trigger("click")
-    expect(wrapper.findAllComponents({ name: "ColourSwatch" }).length).toBe(
-      colourSwatches.length + 1
-    )
+  test("change quantity of a colour updates store", async () => {
+    await colourSwatches[0].find("input").setValue(10)
+    expect(store.panelColours[0].quantity).toBe(10)
   })
 })

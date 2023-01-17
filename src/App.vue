@@ -13,7 +13,7 @@
       Not enough variety of panel colours. Probably too many of one colour and
       not enough of the others.
     </p>
-    <div class="grid">
+    <div id="grid">
       <PanelMatrix
         :matrix="store.matrix"
         :panelColours="store.panelColours"
@@ -36,13 +36,15 @@
   >
     <AboutModal />
   </ModalBox>
-  <ModalBox
-    v-if="store.showColourControls"
-    @close="store.showColourControls = false"
-    width="800px"
-  >
-    <ColourControlsModal />
-  </ModalBox>
+  <KeepAlive>
+    <ModalBox
+      v-if="store.showColourControls"
+      @close="store.showColourControls = false"
+      width="800px"
+    >
+      <ColourControlsModal />
+    </ModalBox>
+  </KeepAlive>
 </template>
 
 <script setup lang="ts">
@@ -88,7 +90,7 @@ store.attemptGenerateMatrix()
   width: 100vw;
 }
 
-.grid {
+#grid {
   position: relative;
   display: flex;
 }

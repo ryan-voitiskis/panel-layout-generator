@@ -35,21 +35,21 @@ function escapeClose(e: KeyboardEvent) {
 }
 
 onMounted(() => {
-  document.body.addEventListener("keyup", escapeClose)
+  document.body.addEventListener("keydown", escapeClose)
   document.body.style.overflow = "hidden" // prevent scrolling of body when modal shown
 })
 onBeforeUnmount(() => {
   document.body.style.overflow = "visible"
-  document.body.removeEventListener("keyup", escapeClose)
+  document.body.removeEventListener("keydown", escapeClose)
 })
 
 onActivated(() => {
-  document.body.addEventListener("keyup", escapeClose)
+  document.body.addEventListener("keydown", escapeClose)
   document.body.style.overflow = "hidden" // prevent scrolling of body when modal shown
 })
 onDeactivated(() => {
   document.body.style.overflow = "visible"
-  document.body.removeEventListener("keyup", escapeClose)
+  document.body.removeEventListener("keydown", escapeClose)
 })
 </script>
 

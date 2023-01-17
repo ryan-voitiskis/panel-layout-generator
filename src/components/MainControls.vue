@@ -80,7 +80,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from "vue"
+import { computed } from "vue"
 import { matrixStore } from "../matrixStore"
 import ColourSwatch from "./ColourSwatch.vue"
 import PaletteIcon from "./icons/PaletteIcon.vue"
@@ -95,18 +95,6 @@ const print = () => window.print()
 const coloursTemplateColumns = computed(
   () => `repeat(${store.panelColours.length}, 120px)`
 )
-
-watch(
-  () => store.numberOfRows,
-  () => store.attemptGenerateMatrix()
-)
-
-watch(
-  () => store.numberOfColumns,
-  () => store.attemptGenerateMatrix()
-)
-
-store.attemptGenerateMatrix()
 </script>
 
 <style lang="scss" scoped>

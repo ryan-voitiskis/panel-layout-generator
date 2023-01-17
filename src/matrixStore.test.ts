@@ -3,6 +3,8 @@ import { describe, beforeEach, test, expect } from "vitest"
 import PanelColour from "./interfaces/PanelColour"
 import { matrixStore } from "./matrixStore"
 
+// the following tests are of unit style, testing the matrixStore in isolation
+// some internal functionality is tested here to help manage complexity of application logic
 describe("MatrixStore", () => {
   let store: ReturnType<typeof matrixStore>
   beforeEach(() => {
@@ -106,7 +108,7 @@ describe("MatrixStore", () => {
       grid: [20, 20], // 400 panels
       panelColourQuantities: [200, 199], // 399 panels
     },
-    // ! uncomment these to test more scenarios, but they take a while to run
+    // ! uncomment these to test more scenarios + better coverage, but they take a while to run
     // {
     //   notEnoughVariety: true,
     //   grid: [20, 20],
