@@ -1,4 +1,4 @@
-import { VueWrapper, DOMWrapper, mount } from "@vue/test-utils"
+import { VueWrapper, mount } from "@vue/test-utils"
 import { describe, test, expect, beforeEach } from "vitest"
 import ColourControlsModal from "./ColourControlsModal.vue"
 import { matrixStore } from "../matrixStore"
@@ -11,12 +11,12 @@ import { createPinia, setActivePinia } from "pinia"
   https://github.com/vuejs/test-utils/issues/1866
   also defineExport required for directly accessing component props with wrapper.vm
   * note: avoid <script setup> if you want to use vue test utils in this way
-  ! ideally don't test component internals, test behaviour instead
 */
 
 describe("ColourControlsModal", () => {
   let store: ReturnType<typeof matrixStore>
   let wrapper: VueWrapper<any>
+  let colourSwatches: VueWrapper<any>[]
 
   beforeEach(() => {
     // * https://pinia.vuejs.org/cookbook/testing.html#unit-testing-a-store
@@ -29,12 +29,10 @@ describe("ColourControlsModal", () => {
         },
       },
     })
+    colourSwatches = wrapper.findAllComponents({ name: "ColourSwatch" })
   })
 
   test("deleting a ColourSwatch removes it", async () => {
-    const colourSwatches = wrapper.findAllComponents({
-      name: "ColourSwatch",
-    })
     await colourSwatches[0].find("button").trigger("click")
     expect(wrapper.findAllComponents({ name: "ColourSwatch" }).length).toBe(
       colourSwatches.length - 1
@@ -42,9 +40,6 @@ describe("ColourControlsModal", () => {
   })
 
   test("adding a colour adds a ColourSwatch", async () => {
-    const colourSwatches = wrapper.findAllComponents({
-      name: "ColourSwatch",
-    })
     await wrapper
       .findComponent({ name: "AddColourForm" })
       .find("#add_colour")
@@ -55,9 +50,6 @@ describe("ColourControlsModal", () => {
   })
 
   test("change quantity of a colour updates store", async () => {
-    const colourSwatches = wrapper.findAllComponents({
-      name: "ColourSwatch",
-    })
     await colourSwatches[0].find("input").setValue(10)
     expect(store.panelColours[0].quantity).toBe(10)
   })

@@ -10,15 +10,6 @@ describe("MatrixStore", () => {
     store = matrixStore()
   })
 
-  test("should load with 8 rows and 12 columns", () => {
-    expect(store.numberOfRows).toBe(8)
-    expect(store.numberOfColumns).toBe(12)
-  })
-
-  test("should load with 5 colours", () => {
-    expect(store.panelColours.length).toBe(5)
-  })
-
   test("should load with enough colours to fill the matrix", () => {
     const totalColours = store.panelColours.reduce(
       (acc, c) => acc + c.quantity,

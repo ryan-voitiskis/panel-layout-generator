@@ -11,7 +11,6 @@ import { createPinia, setActivePinia } from "pinia"
   https://github.com/vuejs/test-utils/issues/1866
   also defineExport required for directly accessing component props with wrapper.vm
   * note: avoid <script setup> if you want to use vue test utils in this way
-  ! ideally don't test component internals, test behaviour instead
 */
 
 describe("App", () => {

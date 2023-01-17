@@ -70,7 +70,7 @@ input[type="button"] {
   transition: background-color 200ms, color 200ms;
   white-space: nowrap;
   svg {
-    overflow: visible; // because spotify logo was being clipped by a fraction of a px
+    overflow: visible;
     align-self: center;
     height: 22px;
     transition: fill 200ms;
