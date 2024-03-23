@@ -6,11 +6,11 @@ export const matrixStore = defineStore("matrixStore", {
     numberOfRows: 8,
     numberOfColumns: 12,
     panelColours: [
-      { colour: "#F5D0A9", textColour: "#111", quantity: 20, quantityUsed: 0 },
-      { colour: "#F5A9BC", textColour: "#111", quantity: 20, quantityUsed: 0 },
-      { colour: "#A9BCF5", textColour: "#111", quantity: 20, quantityUsed: 0 },
-      { colour: "#A9F5D0", textColour: "#111", quantity: 20, quantityUsed: 0 },
-      { colour: "#F3F781", textColour: "#111", quantity: 20, quantityUsed: 0 },
+      { colour: "#d26470", textColour: "#111", quantity: 20, quantityUsed: 0 },
+      { colour: "#ef8268", textColour: "#111", quantity: 20, quantityUsed: 0 },
+      { colour: "#ffa660", textColour: "#111", quantity: 20, quantityUsed: 0 },
+      { colour: "#ffce60", textColour: "#111", quantity: 20, quantityUsed: 0 },
+      { colour: "#f9f871", textColour: "#111", quantity: 20, quantityUsed: 0 },
     ] as PanelColour[],
     possibilities: [] as number[], // array of indexes of panelColours, used for generating matrix
     showColourPicker: false, // shows ColourPickerModal.vue
