@@ -51,17 +51,24 @@ describe("AddColourForm", () => {
   })
 
   // test colour is added to store with correct textColour
+  // rgb values are in [0, 1] range (sRGB coords from colorjs.io)
   test.each([
-    { rgb: { r: 0, g: 0, b: 0 }, textColour: "#fff" },
-    { rgb: { r: 1, g: 1, b: 1 }, textColour: "#111" },
-    { rgb: { r: 0.713, g: 0.358, b: 0.358 }, textColour: "#111" },
-    { rgb: { r: 0.702, g: 0.352, b: 0.352 }, textColour: "#fff" },
+    { srgb: [0, 0, 0], textColour: "#fff" },
+    { srgb: [1, 1, 1], textColour: "#111" },
+    { srgb: [0.713, 0.358, 0.358], textColour: "#111" },
+    { srgb: [0.702, 0.352, 0.352], textColour: "#fff" },
   ])(
     "should set textColour appropriate to %s when color picker emits %p",
     (data) => {
+      const mockColor = {
+        to: () => ({ coords: data.srgb }),
+      }
       wrapper
         .findComponent({ name: "ColorPicker" })
-        .vm.$emit("color-change", { colors: { rgb: data.rgb } })
+        .vm.$emit("color-change", {
+          cssColor: "#000",
+          color: mockColor,
+        })
       submitButton.trigger("click")
       expect(store.panelColours[panelColoursLength].textColour).toBe(
         data.textColour
