@@ -1,6 +1,6 @@
 # Panel layout generator
 
-[View the demo](https://panel-layout-generator-107.netlify.app/)
+[View the demo](https://panel-layout-generator-v2.netlify.app/)
 
 Simple front-end web app for planning acoustic panel installations. The
 generator avoids matching adjacent colours while distributing the available
