@@ -1,38 +1,23 @@
-import { VueWrapper, mount } from "@vue/test-utils"
-import { describe, test, expect, beforeEach } from "vitest"
-import ColourControlsModal from "./ColourControlsModal.vue"
-import { matrixStore } from "../matrixStore"
+import { mount, type VueWrapper } from "@vue/test-utils"
 import { createPinia, setActivePinia } from "pinia"
+import { beforeEach, describe, expect, test } from "vitest"
+import { useMatrixStore } from "../useMatrixStore"
+import ColourControlsModal from "./ColourControlsModal.vue"
 
-/*
-  ColourControlsModal.vue is a <script setup> component  
-  wrapper.vm.colour has to be cast like this in <script setup> components:
-  (wrapper.vm as unknown as { colour: string }).colour because
-  https://github.com/vuejs/test-utils/issues/1866
-  also defineExport required for directly accessing component props with wrapper.vm
-  * note: avoid <script setup> if you want to use vue test utils in this way
-*/
-
-describe("ColourControlsModal", () => {
-  let store: ReturnType<typeof matrixStore>
-  let wrapper: VueWrapper<any>
-  let colourSwatches: VueWrapper<any>[]
+describe("ColourSwatch", () => {
+  let store: ReturnType<typeof useMatrixStore>
+  let wrapper: VueWrapper
+  let colourSwatches: VueWrapper[]
 
   beforeEach(() => {
     setActivePinia(createPinia())
-    store = matrixStore()
-    wrapper = mount(ColourControlsModal, {
-      global: {
-        provide: {
-          matrixStore: store,
-        },
-      },
-    })
+    store = useMatrixStore()
+    wrapper = mount(ColourControlsModal)
     colourSwatches = wrapper.findAllComponents({ name: "ColourSwatch" })
   })
 
   test("change quantity of a colour updates store", async () => {
-    await colourSwatches[0].find("input").setValue(10)
-    expect(store.panelColours[0].quantity).toBe(10)
+    await colourSwatches[0]!.find("input").setValue(10)
+    expect(store.panelColours[0]!.quantity).toBe(10)
   })
 })

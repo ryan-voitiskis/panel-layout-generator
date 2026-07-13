@@ -1,6 +1,8 @@
 <!-- svg from https://lucide.dev/ -->
 <template>
   <svg
+    aria-hidden="true"
+    focusable="false"
     xmlns="http://www.w3.org/2000/svg"
     width="24"
     height="24"
@@ -18,5 +20,3 @@
     <rect x="6" y="14" width="12" height="8"></rect>
   </svg>
 </template>
-
-<script setup lang="ts"></script>

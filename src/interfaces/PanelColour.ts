@@ -1,4 +1,4 @@
-export default interface PanelColour {
+export interface PanelColour {
   colour: string
   textColour: string
   quantity: number

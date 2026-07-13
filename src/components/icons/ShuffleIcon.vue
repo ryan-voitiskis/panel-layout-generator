@@ -1,6 +1,8 @@
 <!-- svg from https://heroicons.com/ -->
 <template>
   <svg
+    aria-hidden="true"
+    focusable="false"
     xmlns="http://www.w3.org/2000/svg"
     width="24"
     height="24"
@@ -18,5 +20,3 @@
     <line x1="4" y1="4" x2="9" y2="9"></line>
   </svg>
 </template>
-
-<script setup lang="ts"></script>

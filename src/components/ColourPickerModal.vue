@@ -2,7 +2,9 @@
   <div class="modal-header">
     <h2>Pick a colour</h2>
     <button
+      type="button"
       class="close icon-only-button"
+      aria-label="Close colour picker"
       @click="store.showColourPicker = false"
     >
       <XIcon />
@@ -14,15 +16,16 @@
 </template>
 
 <script setup lang="ts">
-import XIcon from "../components/icons/XIcon.vue"
-import { matrixStore } from "../matrixStore"
-import AddColourForm from "./AddColourForm.vue"
-const store = matrixStore()
+  import { useMatrixStore } from "../useMatrixStore"
+  import AddColourForm from "./AddColourForm.vue"
+  import XIcon from "./icons/XIcon.vue"
+
+  const store = useMatrixStore()
 </script>
 
-<style lang="scss">
-.vacp-color-picker {
-  padding: 0;
-  margin-bottom: 20px;
-}
+<style lang="scss" scoped>
+  :deep(.vacp-color-picker) {
+    padding: 0;
+    margin-bottom: 20px;
+  }
 </style>

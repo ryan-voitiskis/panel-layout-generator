@@ -2,14 +2,16 @@
   <div class="modal-header">
     <h2>Edit panel colours</h2>
     <button
+      type="button"
       class="close icon-only-button"
+      aria-label="Close colour controls"
       @click="store.showColourControls = false"
     >
       <XIcon />
     </button>
   </div>
   <div class="modal-body">
-    <div class="colours">
+    <div class="colour-list">
       <ColourSwatch
         v-for="(colour, index) in store.panelColours"
         :colour="colour"
@@ -17,29 +19,29 @@
         :key="index"
       />
     </div>
-    <h3 class="center-300">Add a colour</h3>
-    <AddColourForm class="center-300" />
+    <h3 class="colour-controls__form">Add a colour</h3>
+    <AddColourForm class="colour-controls__form" />
   </div>
 </template>
 
 <script setup lang="ts">
-import XIcon from "../components/icons/XIcon.vue"
-import { matrixStore } from "../matrixStore"
-import AddColourForm from "./AddColourForm.vue"
-import ColourSwatch from "./ColourSwatch.vue"
+  import { useMatrixStore } from "../useMatrixStore"
+  import AddColourForm from "./AddColourForm.vue"
+  import ColourSwatch from "./ColourSwatch.vue"
+  import XIcon from "./icons/XIcon.vue"
 
-const store = matrixStore()
+  const store = useMatrixStore()
 </script>
 
-<style lang="scss">
-.colours {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  width: 100%;
-}
-.center-300 {
-  width: 300px;
-  margin: 20px auto;
-}
+<style lang="scss" scoped>
+  .colour-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 100%;
+  }
+  .colour-controls__form {
+    width: 300px;
+    margin: 20px auto;
+  }
 </style>

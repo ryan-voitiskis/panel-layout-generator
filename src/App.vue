@@ -3,20 +3,19 @@
     <div class="controls">
       <MainControls />
     </div>
-    <p v-if="store.notEnoughPanels" id="not_enough_panels_msg">
+    <p v-if="store.notEnoughPanels" id="not_enough_panels_msg" role="status">
       Not enough panels to fill the grid.
     </p>
-    <p v-if="store.generateFailed" id="generate_failed_msg">
-      Failed to generate a grid. Unknown reason.
+    <p v-if="store.generateFailed" id="generate_failed_msg" role="status">
+      Could not generate a grid with these settings. Try shuffling again.
     </p>
-    <p v-if="store.notEnoughVariety" id="not_enough_variety_msg">
-      Not enough variety of panel colours. Probably too many of one colour and
-      not enough of the others.
+    <p v-if="store.notEnoughVariety" id="not_enough_variety_msg" role="status">
+      Not enough colour variety. Add more panels in the other colours.
     </p>
     <div id="grid">
       <PanelMatrix
         :matrix="store.matrix"
-        :panelColours="store.panelColours"
+        :panel-colours="store.panelColours"
         :panel-dimension="panelDimension"
         v-cloak
       />
@@ -24,23 +23,26 @@
   </div>
   <ModalBox
     v-if="store.showColourPicker"
-    @close="store.showColourPicker = false"
+    label="Pick a colour"
     width="380px"
+    @close="store.showColourPicker = false"
   >
     <ColourPickerModal />
   </ModalBox>
   <ModalBox
     v-if="store.showAbout"
-    @close="store.showAbout = false"
+    label="About Panel layout generator"
     width="640px"
+    @close="store.showAbout = false"
   >
     <AboutModal />
   </ModalBox>
   <KeepAlive>
     <ModalBox
       v-if="store.showColourControls"
-      @close="store.showColourControls = false"
+      label="Edit panel colours"
       width="800px"
+      @close="store.showColourControls = false"
     >
       <ColourControlsModal />
     </ModalBox>
@@ -48,77 +50,83 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from "vue"
-import { matrixStore } from "./matrixStore"
-import ColourPickerModal from "./components/ColourPickerModal.vue"
-import ColourControlsModal from "./components/ColourControlsModal.vue"
-import PanelMatrix from "./components/PanelMatrix.vue"
-import AboutModal from "./components/AboutModal.vue"
-import ModalBox from "./components/ModalBox.vue"
-import MainControls from "./components/MainControls.vue"
-const store = matrixStore()
+  import { computed, onBeforeUnmount, onMounted, reactive, watch } from "vue"
+  import ColourPickerModal from "./components/ColourPickerModal.vue"
+  import ColourControlsModal from "./components/ColourControlsModal.vue"
+  import PanelMatrix from "./components/PanelMatrix.vue"
+  import AboutModal from "./components/AboutModal.vue"
+  import ModalBox from "./components/ModalBox.vue"
+  import MainControls from "./components/MainControls.vue"
+  import { useMatrixStore } from "./useMatrixStore"
 
-const screenHeight = window.innerHeight - 140
-const screenWidth = window.innerWidth
-const panelHeight = computed(() => screenHeight / store.numberOfRows)
-const panelWidth = computed(() => screenWidth / store.numberOfColumns)
-const panelDimension = computed(() =>
-  panelHeight.value < panelWidth.value
-    ? panelHeight.value + "px"
-    : panelWidth.value + "px"
-)
+  const CONTROLS_HEIGHT = 140
+  const store = useMatrixStore()
 
-watch(
-  () => store.numberOfRows,
-  () => store.attemptGenerateMatrix()
-)
+  const viewport = reactive({
+    height: window.innerHeight,
+    width: window.innerWidth,
+  })
+  const panelDimension = computed(() => {
+    const panelHeight =
+      Math.max(0, viewport.height - CONTROLS_HEIGHT) / store.numberOfRows
+    const panelWidth = viewport.width / store.numberOfColumns
 
-watch(
-  () => store.numberOfColumns,
-  () => store.attemptGenerateMatrix()
-)
+    return `${Math.min(panelHeight, panelWidth)}px`
+  })
 
-store.attemptGenerateMatrix()
+  watch(
+    [() => store.numberOfRows, () => store.numberOfColumns],
+    () => store.attemptGenerateMatrix(),
+    { immediate: true },
+  )
+
+  function updateViewport() {
+    viewport.height = window.innerHeight
+    viewport.width = window.innerWidth
+  }
+
+  onMounted(() => window.addEventListener("resize", updateViewport))
+  onBeforeUnmount(() => window.removeEventListener("resize", updateViewport))
 </script>
 
 <style lang="scss" scoped>
-.app {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100vh;
-  width: 100vw;
-}
+  .app {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+  }
 
-#grid {
-  position: relative;
-  display: flex;
-}
+  #grid {
+    position: relative;
+    display: flex;
+  }
 
-.controls {
-  height: 140px;
-  max-width: 1800px;
-  display: grid;
-  grid-template-columns: auto minmax(150px, 1fr) auto;
-  grid-template-rows: 140px;
-  gap: 10px;
-  padding: 0 10px;
-}
-
-@media screen and (max-width: 368px) {
   .controls {
-    gap: 6px;
-    padding: 0;
+    height: 140px;
+    max-width: 1800px;
+    display: grid;
+    grid-template-columns: auto minmax(150px, 1fr) auto;
+    grid-template-rows: 140px;
+    gap: 10px;
+    padding: 0 10px;
   }
-}
 
-@media print {
-  .controls {
-    display: none;
+  @media screen and (max-width: 368px) {
+    .controls {
+      gap: 6px;
+      padding: 0;
+    }
   }
-  .grid {
-    padding: 0 10cm;
-    page-break-inside: avoid;
+
+  @media print {
+    .controls {
+      display: none;
+    }
+    #grid {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
   }
-}
 </style>

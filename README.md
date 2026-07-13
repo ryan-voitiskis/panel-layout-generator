@@ -2,13 +2,34 @@
 
 [View the demo](https://panel-layout-generator.com/)
 
-Simple front-end web app for generating a layout for acoustic panel installations. Generated matrix is random and attempts to use the available panels evenly relative to their quantities. Panel colours can be added and deleted, and their quantities edited.
+Simple front-end web app for planning acoustic panel installations. The
+generator avoids matching adjacent colours while distributing the available
+panels in proportion to their quantities. Colours can be added or removed, and
+their available quantities can be adjusted at any time.
 
-Using Vue 3 + TypeScript + Vite
+Built with Vue 3, Pinia, TypeScript, and Vite.
 
-## Recommended IDE Setup
+## Local development
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+Node.js 24 is required.
+
+```sh
+npm ci
+npm run dev
+```
+
+Run the complete validation suite before opening a pull request:
+
+```sh
+npm run check
+```
+
+Other useful commands are `npm run test:watch`, `npm run test:coverage`, and
+`npm run format`.
+
+For VS Code, install the
+[Vue - Official](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
+extension.
 
 ## License
 
@@ -16,7 +37,7 @@ This project is licensed under the MIT License.
 
 ## Contributions
 
-Panel layout generator is an open source project, contributions are welcome.
+Panel layout generator is an open-source project; contributions are welcome.
 
 ## Author
 

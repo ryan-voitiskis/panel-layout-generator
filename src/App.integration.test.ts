@@ -1,12 +1,13 @@
-import { VueWrapper, DOMWrapper, mount } from "@vue/test-utils"
-import { describe, test, expect, beforeEach, afterEach } from "vitest"
-import App from "./App.vue"
-import { matrixStore } from "./matrixStore"
+import { type DOMWrapper, mount, type VueWrapper } from "@vue/test-utils"
 import { createPinia, setActivePinia } from "pinia"
+import { nextTick } from "vue"
+import { afterEach, beforeEach, describe, expect, test } from "vitest"
+import App from "./App.vue"
+import { useMatrixStore } from "./useMatrixStore"
 
 describe("App", () => {
-  let store: ReturnType<typeof matrixStore>
-  let wrapper: VueWrapper<any>
+  let store: ReturnType<typeof useMatrixStore>
+  let wrapper: VueWrapper
   let toggleNumbersButton: DOMWrapper<Element>
   let shuffleButton: DOMWrapper<Element>
   let rowsInput: DOMWrapper<HTMLInputElement>
@@ -15,14 +16,8 @@ describe("App", () => {
 
   beforeEach(() => {
     setActivePinia(createPinia())
-    store = matrixStore()
-    wrapper = mount(App, {
-      global: {
-        provide: {
-          matrixStore: store,
-        },
-      },
-    })
+    store = useMatrixStore()
+    wrapper = mount(App)
 
     toggleNumbersButton = wrapper.find("#toggle_numbers")
     shuffleButton = wrapper.find("#shuffle")
@@ -55,7 +50,7 @@ describe("App", () => {
     expect(wrapper.find("#not_enough_panels_msg").exists()).toBe(false)
     const totalAvailablePanels = store.panelColours.reduce(
       (total, colour) => total + colour.quantity,
-      0
+      0,
     )
     const newGridSize = Math.ceil(Math.sqrt(totalAvailablePanels))
     await rowsInput.setValue(newGridSize)
@@ -67,9 +62,9 @@ describe("App", () => {
     const colourSwatches = wrapper.findAllComponents({
       name: "ColourSwatch",
     })
-    await colourSwatches[0].find("button").trigger("click")
+    await colourSwatches[0]!.find("button").trigger("click")
     expect(wrapper.findAllComponents({ name: "ColourSwatch" }).length).toBe(
-      colourSwatches.length - 1
+      colourSwatches.length - 1,
     )
   })
 
@@ -78,9 +73,12 @@ describe("App", () => {
       name: "ColourSwatch",
     })
     await wrapper.find("#open_add_colour").trigger("click")
-    await wrapper.find("#add_colour").trigger("click")
+    await wrapper
+      .findComponent({ name: "AddColourForm" })
+      .find("form")
+      .trigger("submit")
     expect(wrapper.findAllComponents({ name: "ColourSwatch" }).length).toBe(
-      colourSwatches.length + 1
+      colourSwatches.length + 1,
     )
   })
 
@@ -88,44 +86,43 @@ describe("App", () => {
     const colourSwatches = wrapper.findAllComponents({
       name: "ColourSwatch",
     })
-    await colourSwatches[0].find("input").setValue(10)
-    expect(store.panelColours[0].quantity).toBe(10)
+    await colourSwatches[0]!.find("input").setValue(10)
+    expect(store.panelColours[0]!.quantity).toBe(10)
   })
 
   test("clicking add colour button opens ColourPickerModal", async () => {
     expect(wrapper.findComponent({ name: "ColourPickerModal" }).exists()).toBe(
-      false
+      false,
     )
     await wrapper.find("#open_add_colour").trigger("click")
     expect(wrapper.findComponent({ name: "ColourPickerModal" }).exists()).toBe(
-      true
+      true,
     )
   })
 
   test("clicking close button on ColourPickerModal closes it", async () => {
     await wrapper.find("#open_add_colour").trigger("click")
     expect(wrapper.findComponent({ name: "ColourPickerModal" }).exists()).toBe(
-      true
+      true,
     )
     await wrapper
       .findComponent({ name: "ColourPickerModal" })
       .find(".close")
       .trigger("click")
     expect(wrapper.findComponent({ name: "ColourPickerModal" }).exists()).toBe(
-      false
+      false,
     )
   })
 
   test("esc key closes ColourPickerModal", async () => {
     await wrapper.find("#open_add_colour").trigger("click")
     expect(wrapper.findComponent({ name: "ColourPickerModal" }).exists()).toBe(
-      true
+      true,
     )
-    await document.body.dispatchEvent(
-      new KeyboardEvent("keydown", { key: "Escape" })
-    )
+    document.body.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }))
+    await nextTick()
     expect(wrapper.findComponent({ name: "ColourPickerModal" }).exists()).toBe(
-      false
+      false,
     )
   })
 
@@ -175,22 +172,20 @@ describe("App", () => {
   test("esc key closes about modal", async () => {
     await wrapper.find("#open_about").trigger("click")
     expect(wrapper.findComponent({ name: "AboutModal" }).exists()).toBe(true)
-    await document.body.dispatchEvent(
-      new KeyboardEvent("keydown", { key: "Escape" })
-    )
+    document.body.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }))
+    await nextTick()
     expect(wrapper.findComponent({ name: "AboutModal" }).exists()).toBe(false)
   })
 
   test("esc key closes ColourControlsModal", async () => {
     await wrapper.find("#open_edit_colours").trigger("click")
     expect(
-      wrapper.findComponent({ name: "ColourControlsModal" }).exists()
+      wrapper.findComponent({ name: "ColourControlsModal" }).exists(),
     ).toBe(true)
-    await document.body.dispatchEvent(
-      new KeyboardEvent("keydown", { key: "Escape" })
-    )
+    document.body.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }))
+    await nextTick()
     expect(
-      wrapper.findComponent({ name: "ColourControlsModal" }).exists()
+      wrapper.findComponent({ name: "ColourControlsModal" }).exists(),
     ).toBe(false)
   })
 })

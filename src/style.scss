@@ -2,7 +2,10 @@
 *:before,
 *:after {
   box-sizing: border-box;
-  transition: background-color 80ms, background 80ms, color 160ms;
+  transition:
+    background-color 80ms,
+    background 80ms,
+    color 160ms;
 }
 
 html {
@@ -49,6 +52,11 @@ input[type="number"] {
   line-height: 50px;
 }
 
+:focus-visible {
+  outline: 3px solid hsl(216, 76%, 39%);
+  outline-offset: 2px;
+}
+
 .btn,
 button,
 input[type="submit"],
@@ -67,7 +75,9 @@ input[type="button"] {
   padding: 0 24px;
   text-align: center;
   text-decoration: none;
-  transition: background-color 200ms, color 200ms;
+  transition:
+    background-color 200ms,
+    color 200ms;
   white-space: nowrap;
   svg {
     overflow: visible;
@@ -123,5 +133,13 @@ label {
   html {
     background-color: white !important;
     color: #000;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none;
   }
 }

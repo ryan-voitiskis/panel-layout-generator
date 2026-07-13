@@ -1,7 +1,12 @@
 <template>
   <div class="modal-header">
     <h2><span>Panel layout generator</span></h2>
-    <button class="close icon-only-button" @click="store.showAbout = false">
+    <button
+      type="button"
+      class="close icon-only-button"
+      aria-label="Close about dialog"
+      @click="store.showAbout = false"
+    >
       <XIcon />
     </button>
   </div>
@@ -51,7 +56,9 @@
     <h3>License <ScaleIcon /></h3>
     <p>
       This project is licensed under the
-      <a href="https://github.com/ryan-voitiskis/crate-guide/blob/main/LICENSE">
+      <a
+        href="https://github.com/ryan-voitiskis/panel-layout-generator/blob/main/LICENSE"
+      >
         MIT License
       </a>
     </p>
@@ -73,58 +80,54 @@
     </p>
   </div>
   <div class="modal-footer">
-    <button class="close" @click="store.showAbout = false">Close</button>
+    <button type="button" class="close" @click="store.showAbout = false">
+      Close
+    </button>
   </div>
 </template>
 
 <script setup lang="ts">
-import XIcon from "../components/icons/XIcon.vue"
-import { matrixStore } from "../matrixStore"
-import ScaleIcon from "../components/icons/ScaleIcon.vue"
-import PullRequestIcon from "../components/icons/PullRequestIcon.vue"
-import CodeIcon from "../components/icons/CodeIcon.vue"
+  import { useMatrixStore } from "../useMatrixStore"
+  import CodeIcon from "./icons/CodeIcon.vue"
+  import PullRequestIcon from "./icons/PullRequestIcon.vue"
+  import ScaleIcon from "./icons/ScaleIcon.vue"
+  import XIcon from "./icons/XIcon.vue"
 
-const store = matrixStore()
+  const store = useMatrixStore()
 </script>
 
-<style lang="scss">
-.modal-body > p.generation-info {
-  color: #888;
-  text-align: center;
-}
-h2 {
-  span {
-    font-size: 28px;
-    font-weight: 600;
-    line-height: 38px;
-    background: linear-gradient(
-      96.2deg,
-      rgb(207, 185, 71) 10.4%,
-      rgb(255, 100, 100) 43.8%,
-      rgb(0, 93, 219) 105.8%
-    );
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    display: inline-block;
+<style lang="scss" scoped>
+  .modal-body > p.generation-info {
+    color: #888;
+    text-align: center;
   }
-}
+  h2 {
+    span {
+      font-size: 28px;
+      font-weight: 600;
+      line-height: 38px;
+      background: linear-gradient(
+        96.2deg,
+        rgb(207, 185, 71) 10.4%,
+        rgb(255, 100, 100) 43.8%,
+        rgb(0, 93, 219) 105.8%
+      );
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+    }
+  }
 
-hr {
-  margin-bottom: 30px;
-}
-h3 {
-  display: flex;
-  align-content: center;
-  svg {
-    align-self: center;
-    height: 22px;
-    margin-left: 10px;
+  hr {
+    margin-bottom: 30px;
   }
-}
-
-@media print {
-  html {
-    background-color: white;
+  h3 {
+    display: flex;
+    align-content: center;
+    svg {
+      align-self: center;
+      height: 22px;
+      margin-left: 10px;
+    }
   }
-}
 </style>

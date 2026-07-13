@@ -11,6 +11,9 @@ node_modules
 coverage
 dist
 dist-ssr
+output
+.playwright-cli
+.wrangler
 *.local
 
 # Editor directories and files
